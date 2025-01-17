@@ -41,8 +41,35 @@ app.use('/api/search', searchRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(500).send('Internal Server Error');
+    console.error('Error details:', err); // Log the error details for debugging
+
+    // Check if the error has a status code
+    if (err.status) {
+        return res.status(err.status).json({
+            error: {
+                message: err.message || 'An error occurred',
+                status: err.status,
+            },
+        });
+    }
+
+    // Handle specific error types
+    if (err.name === 'ValidationError') {
+        return res.status(400).json({
+            error: {
+                message: err.message,
+                status: 400,
+            },
+        });
+    }
+
+    // Default to 500 Internal Server Error
+    res.status(500).json({
+        error: {
+            message: 'Internal Server Error',
+            status: 500,
+        },
+    });
 });
 
 app.get('/', (req, res) => {

@@ -51,10 +51,25 @@ router.post('/', async (req, res, next) => {
     try {
         const db = await connectToDatabase();
         const collection = db.collection('gifts');
-        const gift = await collection.insertOne(req.body);
 
+        // Validate request body
+        if (!req.body.name || !req.body.description) {
+            const error = new Error('Name and description are required');
+            error.status = 400; // Bad Request
+            return next(error);
+        }
+
+        const gift = await collection.insertOne(req.body);
         res.status(201).json(gift.ops[0]);
     } catch (e) {
+        // Handle MongoDB errors
+        if (e.code === 11000) {
+            const error = new Error('Gift already exists');
+            error.status = 409; // Conflict
+            return next(error);
+        }
+
+        // Pass other errors to the global error handler
         next(e);
     }
 });
