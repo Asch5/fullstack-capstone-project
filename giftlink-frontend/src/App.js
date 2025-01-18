@@ -11,18 +11,18 @@ import DetailsPage from './components/DetailsPage/DetailsPage';
 
 function App() {
     return (
-        <>
+        <div className="app-container">
             <Navbar />
             <Routes>
                 <Route path="/" element={<MainPage />} />
-                <Route path="/gifts" element={<MainPage />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/login" element={<LoginPage />} />
                 <Route path="/app" element={<MainPage />} />
+                <Route path="/gifts" element={<MainPage />} />
                 <Route path="/gifts/:productId" element={<DetailsPage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
             </Routes>
-        </>
+        </div>
     );
 }
 

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import './RegisterPage.css';
+import { useAppContext } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { urlConfig } from '../../config';
 
 function RegisterPage() {
     // Create state variables for form inputs
@@ -7,16 +10,55 @@ function RegisterPage() {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState(''); // State for error message
+    const { setIsLoggedIn } = useAppContext(); // Get setIsLoggedIn from context
+    const navigate = useNavigate(); // Initialize navigate
+
+    //console.log('setIsLoggedIn', useAppContext());
 
     // Handle form submission
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        console.log('Register attempt with:', {
-            firstName,
-            lastName,
-            email,
-            password,
-        });
+        setErrorMessage(''); // Reset error message
+
+        try {
+            const response = await fetch(
+                `${urlConfig.backendUrl}/api/auth/register`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        firstName,
+                        lastName,
+                        email,
+                        password,
+                    }),
+                }
+            );
+
+            const data = await response.json(); // Access data in JSON format
+
+            if (response.ok) {
+                // Store token and user details in session storage
+                sessionStorage.setItem('auth-token', data.authtoken);
+                sessionStorage.setItem('firstName', data.firstName);
+                sessionStorage.setItem('lastName', data.lastName);
+                sessionStorage.setItem('email', data.email);
+
+                setIsLoggedIn(true); // Set user as logged in
+                navigate('/'); // Navigate to MainPage
+            } else {
+                // Handle registration failure
+                setErrorMessage(
+                    data.error || 'Registration failed. Please try again.'
+                );
+            }
+        } catch (error) {
+            console.error('Error during registration:', error);
+            setErrorMessage('An error occurred. Please try again later.');
+        }
     };
 
     return (
@@ -39,6 +81,7 @@ function RegisterPage() {
                                         setFirstName(e.target.value)
                                     }
                                     required
+                                    autoComplete="firstname"
                                 />
                             </div>
                             <div className="form-group mb-3">
@@ -52,6 +95,7 @@ function RegisterPage() {
                                         setLastName(e.target.value)
                                     }
                                     required
+                                    autoComplete="lastname"
                                 />
                             </div>
                             <div className="form-group mb-3">
@@ -63,6 +107,7 @@ function RegisterPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
+                                    autoComplete="email"
                                 />
                             </div>
                             <div className="form-group mb-3">
@@ -76,6 +121,7 @@ function RegisterPage() {
                                         setPassword(e.target.value)
                                     }
                                     required
+                                    autoComplete="current-password"
                                 />
                             </div>
                             <button
@@ -84,6 +130,10 @@ function RegisterPage() {
                             >
                                 Register
                             </button>
+                            {errorMessage && (
+                                <p className="text-danger">{errorMessage}</p>
+                            )}{' '}
+                            {/* Display error message */}
                         </form>
                         <p className="mt-4 text-center">
                             Already a member?{' '}

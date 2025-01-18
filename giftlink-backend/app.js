@@ -77,6 +77,13 @@ app.use((err, req, res, next) => {
         },
     });
 });
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
+
+// Route to serve the home page
+app.get('/app', (req, res) => {
+    res.sendFile(__dirname + '/public/home.html');
+});
 
 app.get('/', (req, res) => {
     res.send('Inside the server');
