@@ -131,9 +131,10 @@ function RegisterPage() {
                                 Register
                             </button>
                             {errorMessage && (
-                                <p className="text-danger">{errorMessage}</p>
-                            )}{' '}
-                            {/* Display error message */}
+                                <p className="text-danger mt-3">
+                                    {errorMessage}
+                                </p>
+                            )}
                         </form>
                         <p className="mt-4 text-center">
                             Already a member?{' '}

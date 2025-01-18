@@ -48,4 +48,53 @@ router.post('/register', async (req, res) => {
     }
 });
 
+router.post('/login', async (req, res) => {
+    try {
+        // Task 1: Connect to `giftsdb` in MongoDB through `connectToDatabase` in `db.js`
+        const db = await connectToDatabase();
+
+        // Task 2: Access MongoDB users collection
+        const collection = db.collection('users');
+
+        // Task 3: Check for user credentials in database
+        const user = await collection.findOne({ email: req.body.email });
+
+        console.log('user from loginBackend', user);
+
+        if (!user) {
+            return res
+                .status(400)
+                .json({ error: 'Invalid credentials or user not found' });
+        }
+
+        // Task 4: Check if the user entered password matches the stored encrypted password
+        const isMatch = await bcryptjs.compare(
+            req.body.password,
+            user.password
+        );
+
+        if (!isMatch) {
+            return res
+                .status(400)
+                .json({ error: 'Invalid credentials or user not found' });
+        }
+
+        // Task 5: Fetch user details from database
+        const { _id, firstName, lastName, email } = user;
+
+        // Task 6: Create JWT authentication with user._id as payload
+        const payload = {
+            user: {
+                id: _id,
+            },
+        };
+        const authtoken = jwt.sign(payload, JWT_SECRET);
+
+        logger.info('User logged in successfully');
+        res.json({ authtoken, firstName, lastName, email });
+    } catch (e) {
+        return res.status(500).send('Internal server error');
+    }
+});
+
 module.exports = router;

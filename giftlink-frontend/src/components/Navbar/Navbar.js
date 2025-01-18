@@ -6,15 +6,17 @@ export default function Navbar() {
     const { isLoggedIn, setIsLoggedIn, userName, setUserName } =
         useAppContext();
     const navigate = useNavigate();
+    console.log('useContext from Navbar', useAppContext());
     useEffect(() => {
         const authTokenFromSession = sessionStorage.getItem('auth-token');
-        const nameFromSession = sessionStorage.getItem('name');
+        const nameFromSession = sessionStorage.getItem('firstName');
         if (authTokenFromSession) {
             if (isLoggedIn && nameFromSession) {
                 setUserName(nameFromSession);
             } else {
                 sessionStorage.removeItem('auth-token');
-                sessionStorage.removeItem('name');
+                sessionStorage.removeItem('firstName');
+                sessionStorage.removeItem('lastName');
                 sessionStorage.removeItem('email');
                 setIsLoggedIn(false);
             }

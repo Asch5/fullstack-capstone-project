@@ -15,12 +15,14 @@ function App() {
             <Navbar />
             <Routes>
                 <Route path="/" element={<MainPage />} />
+
                 <Route path="/app" element={<MainPage />} />
+                <Route path="/app/search" element={<SearchPage />} />
+                <Route path="/app/login" element={<LoginPage />} />
+                <Route path="/app/register" element={<RegisterPage />} />
+
                 <Route path="/gifts" element={<MainPage />} />
                 <Route path="/gifts/:productId" element={<DetailsPage />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
             </Routes>
         </div>
     );
