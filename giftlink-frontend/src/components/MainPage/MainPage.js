@@ -29,7 +29,7 @@ function MainPage() {
 
     // Task 2: Navigate to details page
     const goToDetailsPage = (productId) => {
-        navigate(`/details/${productId}`);
+        navigate(`/gifts/${productId}`);
     };
 
     // Task 3: Format timestamp
@@ -71,7 +71,7 @@ function MainPage() {
                                 {/* Task 6: Display formatted date */}
                                 <p className="card-text date-added">
                                     <small className="text-muted">
-                                        Added: {formatDate(gift.dateAdded)}
+                                        Added: {formatDate(gift.date_added)}
                                     </small>
                                 </p>
 
