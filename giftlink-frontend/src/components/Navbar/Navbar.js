@@ -20,6 +20,21 @@ export default function Navbar() {
                             Gifts
                         </a>
                     </li>
+                    <li className="nav-item">
+                        <a className="nav-link" href="/register">
+                            Register
+                        </a>
+                    </li>
+                    <li className="nav-item">
+                        <a className="nav-link" href="/login">
+                            Login
+                        </a>
+                    </li>
+                    <li className="nav-item">
+                        <a className="nav-link" href="/search">
+                            Search
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>

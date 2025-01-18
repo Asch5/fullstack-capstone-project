@@ -29,6 +29,8 @@ router.get('/', async (req, res, next) => {
             query.age_years = { $lte: parseInt(req.query.age_years) };
         }
 
+        console.log('query===================================== ', query);
+
         // Task 4: Fetch filtered gifts using the find(query) method
         const gifts = await collection.find(query).toArray();
 
