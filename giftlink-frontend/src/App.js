@@ -9,6 +9,7 @@ import LoginPage from './components/LoginPage/LoginPage';
 import SearchPage from './components/SearchPage/SearchPage';
 import DetailsPage from './components/DetailsPage/DetailsPage';
 import Profile from './components/Profile/Profile';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
     return (
@@ -16,12 +17,25 @@ function App() {
             <Navbar />
             <Routes>
                 <Route path="/" element={<MainPage />} />
-
                 <Route path="/app" element={<MainPage />} />
-                <Route path="/app/search" element={<SearchPage />} />
                 <Route path="/app/login" element={<LoginPage />} />
                 <Route path="/app/register" element={<RegisterPage />} />
-                <Route path="/app/profile" element={<Profile />} />
+                <Route
+                    path="/app/search"
+                    element={
+                        <ProtectedRoute>
+                            <SearchPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/app/profile"
+                    element={
+                        <ProtectedRoute>
+                            <Profile />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path="/gifts" element={<MainPage />} />
                 <Route path="/gifts/:productId" element={<DetailsPage />} />
             </Routes>

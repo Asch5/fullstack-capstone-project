@@ -138,7 +138,7 @@ function RegisterPage() {
                         </form>
                         <p className="mt-4 text-center">
                             Already a member?{' '}
-                            <a href="/login" className="text-primary">
+                            <a href="/app/login" className="text-primary">
                                 Login
                             </a>
                         </p>

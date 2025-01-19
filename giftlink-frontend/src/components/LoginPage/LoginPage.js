@@ -102,7 +102,7 @@ function LoginPage() {
                         </form>
                         <p className="mt-4 text-center">
                             Not a member?{' '}
-                            <a href="/register" className="text-primary">
+                            <a href="/app/register" className="text-primary">
                                 Register
                             </a>
                         </p>
