@@ -1,133 +1,157 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import './Profile.css'
-import {urlConfig} from '../../config';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Profile.css';
+import { urlConfig } from '../../config';
 import { useAppContext } from '../../context/AuthContext';
 
 const Profile = () => {
-  const [userDetails, setUserDetails] = useState({});
- const [updatedDetails, setUpdatedDetails] = useState({});
- const {setUserName} = useAppContext();
- const [changed, setChanged] = useState("");
+    const [userDetails, setUserDetails] = useState({});
+    const [updatedDetails, setUpdatedDetails] = useState({});
+    const { setUserName } = useAppContext();
+    const [changed, setChanged] = useState('');
+    const [editMode, setEditMode] = useState(false);
 
- const [editMode, setEditMode] = useState(false);
-  const navigate = useNavigate();
-  useEffect(() => {
-    const authtoken = sessionStorage.getItem("auth-token");
-    if (!authtoken) {
-      navigate("/app/login");
-    } else {
-      fetchUserProfile();
-    }
-  }, [navigate]);
+    const navigate = useNavigate();
 
-  const fetchUserProfile = async () => {
-    try {
-      const authtoken = sessionStorage.getItem("auth-token");
-      const email = sessionStorage.getItem("email");
-      const name=sessionStorage.getItem('name');
-      if (name || authtoken) {
+    const fetchUserProfile = useCallback(async () => {
+        try {
+            const authtoken = sessionStorage.getItem('auth-token');
+            const email = sessionStorage.getItem('email');
+            const firstName = sessionStorage.getItem('firstName');
+            if (firstName || authtoken) {
                 const storedUserDetails = {
-                  name: name,
-                  email:email
+                    firstName: firstName,
+                    email: email,
                 };
 
                 setUserDetails(storedUserDetails);
                 setUpdatedDetails(storedUserDetails);
-              }
-} catch (error) {
-  console.error(error);
-  // Handle error case
-}
-};
+            }
+        } catch (error) {
+            console.error(error);
+            navigate('/app/login');
+        }
+    }, [navigate]);
 
-const handleEdit = () => {
-setEditMode(true);
-};
+    useEffect(() => {
+        const authtoken = sessionStorage.getItem('auth-token');
+        if (!authtoken) {
+            navigate('/app/login');
+        } else {
+            fetchUserProfile();
+        }
+    }, [fetchUserProfile, navigate]);
 
-const handleInputChange = (e) => {
-setUpdatedDetails({
-  ...updatedDetails,
-  [e.target.name]: e.target.value,
-});
-};
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    const handleEdit = () => {
+        setEditMode(true);
+    };
 
-  try {
-    const authtoken = sessionStorage.getItem("auth-token");
-    const email = sessionStorage.getItem("email");
+    const handleInputChange = (e) => {
+        setUpdatedDetails({
+            ...updatedDetails,
+            [e.target.name]: e.target.value,
+        });
+    };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (!authtoken || !email) {
-      navigate("/app/login");
-      return;
-    }
+        try {
+            const authtoken = sessionStorage.getItem('auth-token');
+            const email = sessionStorage.getItem('email');
 
-    const payload = { ...updatedDetails };
-    const response = await fetch(`${urlConfig.backendUrl}/api/auth/update`, {
-      //Step 1: Task 1
-      //Step 1: Task 2
-      //Step 1: Task 3
-    });
+            if (!authtoken || !email) {
+                navigate('/app/login');
+                return;
+            }
 
-    if (response.ok) {
-      // Update the user details in session storage
-      //Step 1: Task 4
-      //Step 1: Task 5
-      setUserDetails(updatedDetails);
-      setEditMode(false);
-      // Display success message to the user
-      setChanged("Name Changed Successfully!");
-      setTimeout(() => {
-        setChanged("");
-        navigate("/");
-      }, 1000);
+            const response = await fetch(
+                `${urlConfig.backendUrl}/api/auth/update`,
+                {
+                    method: 'POST', // Task 1: Set method
+                    headers: {
+                        // Task 2: Set headers
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${authtoken}`,
+                    },
+                    body: JSON.stringify({
+                        // Task 3: Set body
+                        firstName: updatedDetails.firstName,
+                        email: email,
+                    }),
+                }
+            );
 
-    } else {
-      // Handle error case
-      throw new Error("Failed to update profile");
-    }
-  } catch (error) {
-    console.error(error);
-    // Handle error case
-  }
-};
+            if (response.ok) {
+                const data = await response.json();
+                // Task 4: Set the new name in AppContext
+                setUserName(data.firstName);
 
-return (
-<div className="profile-container">
-  {editMode ? (
-<form onSubmit={handleSubmit}>
-<label>
-  Email
-  <input
-    type="email"
-    name="email"
-    value={userDetails.email}
-    disabled // Disable the email field
-  />
-</label>
-<label>
-   Name
-   <input
-     type="text"
-     name="name"
-     value={updatedDetails.name}
-     onChange={handleInputChange}
-   />
-</label>
+                // Task 5: Set user name in session storage
+                sessionStorage.setItem('firstName', data.firstName);
 
-<button type="submit">Save</button>
-</form>
-) : (
-<div className="profile-details">
-<h1>Hi, {userDetails.name}</h1>
-<p> <b>Email:</b> {userDetails.email}</p>
-<button onClick={handleEdit}>Edit</button>
-<span style={{color:'green',height:'.5cm',display:'block',fontStyle:'italic',fontSize:'12px'}}>{changed}</span>
-</div>
-)}
-</div>
-);
+                setUserDetails(updatedDetails);
+                setEditMode(false);
+                setChanged('Name Changed Successfully!');
+                setTimeout(() => {
+                    setChanged('');
+                    navigate('/');
+                }, 1000);
+            } else {
+                throw new Error('Failed to update profile');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    return (
+        <div className="profile-container">
+            {editMode ? (
+                <form onSubmit={handleSubmit}>
+                    <label>
+                        Email
+                        <input
+                            type="email"
+                            name="email"
+                            value={userDetails.email}
+                            disabled // Disable the email field
+                        />
+                    </label>
+                    <label>
+                        Name
+                        <input
+                            type="text"
+                            name="firstName"
+                            value={updatedDetails.firstName}
+                            onChange={handleInputChange}
+                        />
+                    </label>
+
+                    <button type="submit">Save</button>
+                </form>
+            ) : (
+                <div className="profile-details">
+                    <h1>Hi, {userDetails.firstName}</h1>
+                    <p>
+                        {' '}
+                        <b>Email:</b> {userDetails.email}
+                    </p>
+                    <button onClick={handleEdit}>Edit</button>
+                    <span
+                        style={{
+                            color: 'green',
+                            height: '.5cm',
+                            display: 'block',
+                            fontStyle: 'italic',
+                            fontSize: '12px',
+                        }}
+                    >
+                        {changed}
+                    </span>
+                </div>
+            )}
+        </div>
+    );
 };
 
 export default Profile;
