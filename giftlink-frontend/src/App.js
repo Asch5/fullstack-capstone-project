@@ -36,8 +36,11 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-                <Route path="/gifts" element={<MainPage />} />
-                <Route path="/gifts/:productId" element={<DetailsPage />} />
+
+                <Route
+                    path="/app/product/:productId"
+                    element={<DetailsPage />}
+                />
             </Routes>
         </div>
     );

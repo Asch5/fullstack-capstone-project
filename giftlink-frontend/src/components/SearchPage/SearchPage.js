@@ -40,7 +40,7 @@ function SearchPage() {
     const navigate = useNavigate();
 
     const goToDetailsPage = (productId) => {
-        navigate(`/gifts/${productId}`);
+        navigate(`/app/product/${productId}`);
 
         // Task 6. Enable navigation to the details page of a selected gift.
     };
